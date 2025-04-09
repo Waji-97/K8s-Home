@@ -1,0 +1,29 @@
+apiVersion: v1
+data:
+    password: ENC[AES256_GCM,data:sKqg3pn0MsEihmaLc92dW/rvi969Zd/aiqQ8/36I8y2LNNwLrhJ5VL/1S5+nxHI5/8H50VkeLM4=,iv:oYbxGRVHKYYydSvrIHQy7GfPyBmU3bdpE9DJd+3/y9w=,tag:YdX0pJilCUEVpx1/D1oPBg==,type:str]
+    username: ENC[AES256_GCM,data:YjQ3CA==,iv:W9e1EMPTPjIgy4s/+b7jFSjt0/TTgTiwGVWsZmzxHyw=,tag:LVEXD88plcwFXqxokPoVbw==,type:str]
+kind: Secret
+metadata:
+    name: flux-system
+    namespace: flux-system
+type: Opaque
+sops:
+    kms: []
+    gcp_kms: []
+    azure_kv: []
+    hc_vault: []
+    age:
+        - recipient: age100v6hmwlerqakxl32jl2acv5wn69tl9qzn577sv0z7qgy35nmsjqsg8zpl
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBibXQzUVpYOE9TaHV6MnhF
+            YmNFUVppbUNTemY2UGM3bmlHQnVKTmQwRDBJCjdXdXZRQjk4K1YxUUphUmZka0JE
+            c1JFR0taS0hDVGdodDNab0NuQmt6aFkKLS0tIHFQWHV5U2pQR3lsNzRZdGFjdW9m
+            OGppdm84Z2tQOFNlbWVjRnlKZzhlWWsK2tzDN1+L4APRpOODlI0zlo3MtCW8zj24
+            qmZ+CSwiUYhpGnneGlnqOSQVyi9wcSM/P7XtpfU79D5W1jEdvKciWQ==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2025-04-09T13:46:58Z"
+    mac: ENC[AES256_GCM,data:p2sVP6m0MVpPULD+TIrgSj+nX9CLkq2Faj0zjb9S/WzWeFKaxf/nc8JhAwlOSfCKKP52oRlfV6UyQmtr2L3EClmXDf+8/dTpWgNistAHQqM3TV6/TgfI5Vq2CaERns1q0ypI0AlaGh0Z+fDc9Tw/nVSUh1GKwm4IXJM0AGyZayQ=,iv:TkkQlOmX+jP2jIAPz92mPkLulPmEUpuDOoYM2ZoxyWU=,tag:4KhugYO78OZBQ+370MBN3A==,type:str]
+    pgp: []
+    encrypted_regex: ^(stringData|data)$
+    version: 3.9.4

@@ -148,7 +148,7 @@ apiVersion: notification.toolkit.fluxcd.io/v1beta3
 kind: Provider
 metadata:
   name: discord
-  namespace: default
+  namespace: flux-system
 spec:
   type: discord
   secretRef:
@@ -158,7 +158,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: discord-webhook
-  namespace: default
+  namespace: flux-system
 stringData:
     address: "https://discord.com/api/webhooks/..."           ## ==> Use discord webhook URL
 ```
@@ -178,5 +178,35 @@ resources:
 - gotk-sync.yaml
 - discord-alerts.yaml          ## ==> add this
 ```
+
+Finally, we can push these changes up to remote.
+
+## Move Flux Secrets to Github
+If we check secrets under `flux-system`,
+```bash
+k get secret -n flux-system 
+NAME              TYPE     DATA   AGE
+discord-webhook   Opaque   1      30s
+flux-system       Opaque   2      48m
+sops-age          Opaque   1      34m
+```
+
+We can see that we got 2 secrets that are not present in the Github repository. (not fully GitOps?).
+Before moving them to Github, we need to encrypt them using SOPS.
+
+The following will give us the manifests
+```bash
+k get secret -n flux-system flux-system -o yaml > flux.yaml
+k get secret -n flux-system sops-age -o yaml > sops.yaml
+```
+
+Then SOPS encrypt
+> Before encrypting the above manifests, make sure to remove unnecessary inside the manifest such as `uid`, `creationTimeStamp` 
+```bash
+sops -e -i flux.yaml
+sops -e -i sops.yaml
+```
+
+Then we can move them under `/apps/flux-system` & also adding them to the kustomization yaml.
 
 Finally, we can push these changes up to remote.
