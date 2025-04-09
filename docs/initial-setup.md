@@ -2,10 +2,10 @@
 I have 4 nodes in my HomeLab
 | Device                      | Name      | Disk Size |  Ram  | CPU        | Operating System  | Purpose              |
 |-----------------------------|-----------|-----------|-------|------------|-------------------|----------------------|
-| Custom Made PC              | rel       | 1TB NVMe  | 64GB  | 24C/32T    |Ubuntu 22.04.5 LTS | Kubernetes Worker    |
-| Mini PC 1                   | mini1     | 64GB SSD  | 16GB  | 4C/4T      |Ubuntu 22.04.5 LTS | Kubernetes Master 1  |
-| Mini PC 2                   | mini2     | 64GB SSD  | 16GB  | 4C/4T      |Ubuntu 22.04.5 LTS | Kubernetes Master 2  |
-| Mini PC 3                   | mini3     | 64GB SSD  | 16GB  | 4C/4T      |Ubuntu 22.04.5 LTS | Kubernetes Master 3  |
+| Custom Made PC              | pc        | 1TB NVMe  | 64GB  | 24C/32T    |Ubuntu 20.04.6 LTS | Kubernetes Worker    |
+| Mini PC 1                   | mini1     | 64GB SSD  | 16GB  | 4C/4T      |Ubuntu 20.04.6 LTS | Kubernetes Master 1  |
+| Mini PC 2                   | mini2     | 64GB SSD  | 16GB  | 4C/4T      |Ubuntu 20.04.6 LTS | Kubernetes Master 2  |
+| Mini PC 3                   | mini3     | 64GB SSD  | 16GB  | 4C/4T      |Ubuntu 20.04.6 LTS | Kubernetes Master 3  |
 
 ---
 
