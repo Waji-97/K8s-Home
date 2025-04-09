@@ -167,17 +167,16 @@ The above secret data needs to be secured. So we will encrypt it using SOPS.
 ```bash
 sops -e -i discord-alerts.yaml
 ```
-Then we need `Alerts` custom resource to decide which alerts we will be getting. The yaml can be found under `/apps/flux-system/flux-alert.yaml`
+Then we need `Alerts` custom resource to decide which alerts we will be getting. I have manually added the resource under the same `discord-alerts.yaml` for ease.
 
-Before pushing the changes, we need to make sure that the new manifests are added to the kustomization file under `/apps/flux-system`
+Before pushing the changes, we need to make sure that the new manifest is added to the kustomization file under `/apps/flux-system`
 ```bash
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
 - gotk-components.yaml
 - gotk-sync.yaml
-- discord-alerts.yaml          ## ==> add these
-- flux-alert.yaml
+- discord-alerts.yaml          ## ==> add this
 ```
 
 Finally, we can push these changes up to remote.
