@@ -26,7 +26,6 @@ spec:
         namespace: monitoring
       interval: 30m
   install:
-    createNamespace: true
     remediation:
       retries: 5
   upgrade:
