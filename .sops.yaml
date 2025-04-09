@@ -1,5 +1,5 @@
 creation_rules:
   - key_groups:
       - age:
-          - age1mp2c59e4sg6ey3d3fe5erw6ylylhjwfcmw4f827kpfrquxjd0ctsgtpzag
+          - age100v6hmwlerqakxl32jl2acv5wn69tl9qzn577sv0z7qgy35nmsjqsg8zpl
     encrypted_regex: "^(stringData|data)$"

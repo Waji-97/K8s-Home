@@ -133,3 +133,40 @@ mv age.agekey /home/waji/.config/sops/age/keys.txt
 Then create a `.sops.yaml` file in main that includes encryption regex. 
 
 Finally, we can push these changes up to remote.
+
+
+## Setting up Notifications
+I will be using Discord to get alerts for flux reconcilation. 
+First we need to create discord provider & secret for webhook token.
+
+> We need to create a webhook automation in Discord first
+
+The discord alert yaml file will be put under `/apps/flux-system/discord-alerts.yaml`
+```bash
+---
+apiVersion: notification.toolkit.fluxcd.io/v1beta3
+kind: Provider
+metadata:
+  name: discord
+  namespace: default
+spec:
+  type: discord
+  secretRef:
+    name: discord-webhook
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: discord-webhook
+  namespace: default
+stringData:
+    address: "https://discord.com/api/webhooks/..."           ## ==> Use discord webhook URL
+```
+
+The above secret data needs to be secured. So we will encrypt it using SOPS.
+```bash
+sops -e -i discord-alerts.yaml
+```
+Then we need `Alerts` custom resource to decide which alerts we will be getting. The yaml can be found under `/apps/flux-system/flux-alert.yaml`
+
+Finally, we can push these changes up to remote.
