@@ -2,7 +2,7 @@ apiVersion: notification.toolkit.fluxcd.io/v1beta3
 kind: Provider
 metadata:
     name: discord
-    namespace: default
+    namespace: flux-system
 spec:
     type: discord
     secretRef:
@@ -12,7 +12,7 @@ apiVersion: v1
 kind: Secret
 metadata:
     name: discord-webhook
-    namespace: default
+    namespace: flux-system
 stringData:
     address: ENC[AES256_GCM,data:MCe57OAZTyuAbY1aOT3fhS+aeGhovwZ+vbP3F2W+RqvgAbiAm7NjJjXMrjFAMVb98JSXR/vWO+GgAD0FIgAC3j3hp9NSkhnZigQm7U40U2IlvQZ9nPFWPdt+01IlbqM10LZ+KMwqn3OTqdApdTK12DelfLpkuw9P/A==,iv:/rQeOyIsTEYluU9jxvhU5buEc6h9uaZPSl67YYLBjtA=,tag:RLB1vGQWHbvnXHbBfueAOQ==,type:str]
 sops:
