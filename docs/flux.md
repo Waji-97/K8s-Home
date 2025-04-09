@@ -169,4 +169,15 @@ sops -e -i discord-alerts.yaml
 ```
 Then we need `Alerts` custom resource to decide which alerts we will be getting. The yaml can be found under `/apps/flux-system/flux-alert.yaml`
 
+Before pushing the changes, we need to make sure that the new manifests are added to the kustomization file under `/apps/flux-system`
+```bash
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- gotk-components.yaml
+- gotk-sync.yaml
+- discord-alerts.yaml          ## ==> add these
+- flux-alert.yaml
+```
+
 Finally, we can push these changes up to remote.
