@@ -22,9 +22,7 @@ jobs:
         version: 'v1.31.4'
 
     - name: Set up Flux CLI
-      uses: mamezou-tech/setup-flux2@v2
-      with:
-        flux2-version: '2.2.3'
+      uses: fluxcd/flux2/action@main
 
     - name: Bootstrap Flux in Kind Cluster
       run: |
