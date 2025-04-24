@@ -1,4 +1,4 @@
-name: Lint K8s Resources (Dry Run in Kind)
+name: Lint YAML
 
 on:
   pull_request:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   validate:
-    name: Dry Run with Kind
+    name: YAML Linting
     runs-on: ubuntu-latest
 
     steps:
@@ -16,14 +16,7 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Create kind cluster
-      uses: helm/kind-action@v1.5.0
-
-    - name: Install Flux CLI
-      run: |
-        curl -s https://fluxcd.io/install.sh | sudo bash
-
-    - name: Get changed files
+    - name: Get changed YAML files
       id: changes
       run: |
         git fetch origin main
@@ -33,24 +26,30 @@ jobs:
         echo "$CHANGED" >> $GITHUB_OUTPUT
         echo "EOF" >> $GITHUB_OUTPUT
 
-    - name: Dry-run raw YAML files
+    - name: Install linters
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y yamllint
+        curl -sSLo kubeconform.tar.gz https://github.com/yannh/kubeconform/releases/latest/download/kubeconform-linux-amd64.tar.gz
+        tar -xzf kubeconform.tar.gz
+        sudo mv kubeconform /usr/local/bin/
+
+    - name: Run yamllint
       if: steps.changes.outputs.changed_files != ''
       run: |
         echo "${{ steps.changes.outputs.changed_files }}" | while read file; do
-          if [[ -f "$file" && "$file" != *HelmRelease* ]]; then
-            echo "Dry running raw YAML: $file"
-            kubectl apply --dry-run=client -f "$file"
+          if [[ -f "$file" ]]; then
+            echo "Linting YAML syntax: $file"
+            yamllint "$file"
           fi
         done
 
-
-    - name: Dry run HelmReleases
+    - name: Run kubeconform
+      if: steps.changes.outputs.changed_files != ''
       run: |
         echo "${{ steps.changes.outputs.changed_files }}" | while read file; do
-          if [[ "$file" == *HelmRelease* ]]; then
-            NS=$(yq e '.metadata.namespace' "$file")
-            NAME=$(yq e '.metadata.name' "$file")
-            echo "Rendering HelmRelease $NAME in namespace $NS"
-            flux build helmrelease "$NAME" --namespace "$NS" | kubectl apply --dry-run=server -f -
+          if [[ -f "$file" ]]; then
+            echo "Validating Kubernetes manifest: $file"
+            kubeconform -strict -summary "$file"
           fi
         done
