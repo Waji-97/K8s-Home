@@ -31,8 +31,10 @@ jobs:
           --repository=${{ github.repository }} \
           --branch=${{ github.head_ref }} \
           --path=./clusters/flux-system \
-          --personal \
-          --token=${{ secrets.GITHUB_TOKEN }}
+          --personal
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+
 
     - name: Wait for Flux to be ready
       run: |
