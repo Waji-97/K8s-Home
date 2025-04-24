@@ -1,4 +1,4 @@
-name: Test HelmRelease in Kind Cluster with Flux
+name: Kind Flux Helm Lint
 
 on:
   pull_request:
@@ -6,12 +6,17 @@ on:
       - main
 
 jobs:
-  flux-helm-test:
+  flux-helm-lint:
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
+      with:
+        ref: ${{ github.head_ref }}
 
     - name: Set up Kind cluster
       uses: helm/kind-action@v1
@@ -73,3 +78,11 @@ jobs:
             flux reconcile helmrelease $RELEASE_NAME -n $NAMESPACE --kube-context=kind-kind --test
           fi
         done
+
+    - name: Revert Flux bootstrap commit
+      if: github.event.pull_request.head.repo.full_name == github.repository
+      run: |
+        git config user.name "github-actions"
+        git config user.email "github-actions@github.com"
+        git reset --hard HEAD^
+        git push origin HEAD:${{ github.head_ref }} --force
