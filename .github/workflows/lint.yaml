@@ -1,4 +1,4 @@
-name: Lint YAML
+name: Test HelmRelease in Kind Cluster with Flux
 
 on:
   pull_request:
@@ -6,35 +6,66 @@ on:
       - main
 
 jobs:
-  validate:
-    name: YAML Linting
+  flux-helm-test:
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
 
-    - name: Get changed YAML files
+    - name: Set up Kind Cluster
+      uses: engineerd/setup-kind@v0.5.0
+      with:
+        version: v0.17.0
+
+    - name: Install Flux CLI
+      uses: fluxcd/flux2-action@v2
+      with:
+        flux_version: "v0.26.0"
+
+    - name: Bootstrap Flux in Kind Cluster
+      run: |
+        flux bootstrap github \
+          --owner=${{ github.repository_owner }} \
+          --repository=${{ github.repository }} \
+          --branch=${{ github.head_ref }} \
+          --path=./clusters/flux-system \
+          --personal \
+          --token=${{ secrets.GITHUB_TOKEN }}
+
+    - name: Wait for Flux to be ready
+      run: |
+        kubectl wait --for=condition=ready pod -l app=flux-system -n flux-system --timeout=120s
+
+    - name: Get changed files in PR
       id: changes
       run: |
         git fetch origin main
-        CHANGED=$(git diff --name-only origin/main...HEAD -- 'apps/**/*.yaml' 'apps/**/*.yml')
-        echo "$CHANGED"
+        CHANGED_FILES=$(git diff --name-only origin/main...HEAD -- 'apps/**/*.yaml' 'apps/**/*.yml')
+        echo "Changed files: $CHANGED_FILES"
         echo "changed_files<<EOF" >> $GITHUB_OUTPUT
-        echo "$CHANGED" >> $GITHUB_OUTPUT
+        echo "$CHANGED_FILES" >> $GITHUB_OUTPUT
         echo "EOF" >> $GITHUB_OUTPUT
 
-    - name: Run yamllint
-      if: steps.changed.outputs.changed_files != ''
-      uses: frenck/action-yamllint@v1
-      with:
-        files: ${{ steps.changed.outputs.changed_files }}
+    - name: Apply HelmRelease files
+      if: steps.changes.outputs.changed_files != ''
+      run: |
+        for file in $(echo "${{ steps.changes.outputs.changed_files }}" | tr ' ' '\n'); do
+          if [[ "$file" == *"helmrelease.yaml"* || "$file" == *".yml"* ]]; then
+            echo "Applying HelmRelease: $file"
+            kubectl apply -f "$file"
+          fi
+        done
 
-    - name: Run kubeconform
-      if: steps.changed.outputs.changed_files != ''
-      uses: docker://ghcr.io/yannh/kubeconform:latest
-      with:
-        entrypoint: /kubeconform
-        args: -strict -summary ${{ steps.changed.outputs.changed_files }}
+    - name: Test HelmRelease with Flux
+      if: steps.changes.outputs.changed_files != ''
+      run: |
+        for file in $(echo "${{ steps.changes.outputs.changed_files }}" | tr ' ' '\n'); do
+          if [[ "$file" == *"helmrelease.yaml"* || "$file" == *".yml"* ]]; then
+            # Extract the HelmRelease name (e.g., from metadata.name)
+            RELEASE_NAME=$(yq eval '.metadata.name' "$file")
+            NAMESPACE=$(yq eval '.metadata.namespace' "$file")
+            echo "Testing HelmRelease: $RELEASE_NAME in namespace: $NAMESPACE"
+            flux reconcile helmrelease $RELEASE_NAME -n $NAMESPACE --kube-context=kind-kind --test
+          fi
+        done
