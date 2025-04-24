@@ -1,0 +1,56 @@
+name: Lint K8s Resources (Dry Run in Kind)
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  validate:
+    name: Dry Run with Kind
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Create kind cluster
+      uses: helm/kind-action@v1.5.0
+
+    - name: Get changed files
+      id: changes
+      run: |
+        git fetch origin main
+        CHANGED=$(git diff --name-only origin/main...HEAD -- 'apps/**/*.yaml' 'apps/**/*.yml')
+        echo "$CHANGED"
+        echo "changed_files<<EOF" >> $GITHUB_OUTPUT
+        echo "$CHANGED" >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
+
+    - name: Dry-run raw YAML files
+      if: steps.changes.outputs.changed_files != ''
+      run: |
+        echo "${{ steps.changes.outputs.changed_files }}" | while read file; do
+          if [[ -f "$file" && "$file" != *HelmRelease* ]]; then
+            echo "Dry running raw YAML: $file"
+            kubectl apply --dry-run=server -f "$file"
+          fi
+        done
+
+    - name: Lint HelmReleases (dry run)
+      if: steps.changes.outputs.changed_files != ''
+      uses: docker://ghcr.io/fluxcd/flux-cli:v2.3.0
+      with:
+        entrypoint: sh
+        args: -c '
+          echo "${{ steps.changes.outputs.changed_files }}" | while read file; do
+            if echo "$file" | grep -q "HelmRelease"; then
+              NS=$(docker run --rm -v "${PWD}:/work" -w /work mikefarah/yq e ".metadata.namespace" "$file")
+              NAME=$(docker run --rm -v "${PWD}:/work" -w /work mikefarah/yq e ".metadata.name" "$file")
+              echo "Rendering HelmRelease $NAME in namespace $NS"
+              flux build helmrelease $NAME --namespace $NS | kubectl apply --dry-run=server -f -
+            fi
+          done
+        '
