@@ -31,6 +31,7 @@ jobs:
           --repository=${{ github.repository }} \
           --branch=${{ github.head_ref }} \
           --path=./clusters/flux-system \
+          --token-auth
           --personal
       env:
         GITHUB_TOKEN: ${{ github.token }}
