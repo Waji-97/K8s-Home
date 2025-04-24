@@ -52,5 +52,4 @@ jobs:
               echo "Rendering HelmRelease $NAME in namespace $NS"
               flux build helmrelease $NAME --namespace $NS | kubectl apply --dry-run=server -f -
             fi
-          done
-        '
+          done'
