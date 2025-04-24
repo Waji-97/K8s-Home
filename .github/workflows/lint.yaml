@@ -26,30 +26,15 @@ jobs:
         echo "$CHANGED" >> $GITHUB_OUTPUT
         echo "EOF" >> $GITHUB_OUTPUT
 
-    - name: Install linters
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y yamllint
-        curl -sSLo kubeconform.tar.gz https://github.com/yannh/kubeconform/releases/latest/download/kubeconform-linux-amd64.tar.gz
-        tar -xzf kubeconform.tar.gz
-        sudo mv kubeconform /usr/local/bin/
-
     - name: Run yamllint
-      if: steps.changes.outputs.changed_files != ''
-      run: |
-        echo "${{ steps.changes.outputs.changed_files }}" | while read file; do
-          if [[ -f "$file" ]]; then
-            echo "Linting YAML syntax: $file"
-            yamllint "$file"
-          fi
-        done
+      if: steps.changed.outputs.changed_files != ''
+      uses: frenck/action-yamllint@v1
+      with:
+        files: ${{ steps.changed.outputs.changed_files }}
 
     - name: Run kubeconform
-      if: steps.changes.outputs.changed_files != ''
-      run: |
-        echo "${{ steps.changes.outputs.changed_files }}" | while read file; do
-          if [[ -f "$file" ]]; then
-            echo "Validating Kubernetes manifest: $file"
-            kubeconform -strict -summary "$file"
-          fi
-        done
+      if: steps.changed.outputs.changed_files != ''
+      uses: docker://ghcr.io/yannh/kubeconform:latest
+      with:
+        entrypoint: /kubeconform
+        args: -strict -summary ${{ steps.changed.outputs.changed_files }}
