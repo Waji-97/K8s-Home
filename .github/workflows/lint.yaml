@@ -35,7 +35,7 @@ jobs:
         echo "${{ steps.changes.outputs.changed_files }}" | while read file; do
           if [[ -f "$file" && "$file" != *HelmRelease* ]]; then
             echo "Dry running raw YAML: $file"
-            kubectl apply --dry-run=server -f "$file"
+            kubectl apply --dry-run=client -f "$file"
           fi
         done
 
@@ -50,6 +50,6 @@ jobs:
               NS=$(docker run --rm -v "${PWD}:/work" -w /work mikefarah/yq e ".metadata.namespace" "$file")
               NAME=$(docker run --rm -v "${PWD}:/work" -w /work mikefarah/yq e ".metadata.name" "$file")
               echo "Rendering HelmRelease $NAME in namespace $NS"
-              flux build helmrelease $NAME --namespace $NS | kubectl apply --dry-run=server -f -
+              flux build helmrelease $NAME --namespace $NS | kubectl apply --dry-run=client -f -
             fi
           done'
