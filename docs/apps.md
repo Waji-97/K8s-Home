@@ -7,3 +7,5 @@ The following table lists the components installed in the Kubernetes cluster
 |[<img width="32" src="https://avatars.githubusercontent.com/u/36015203?s=48&v=4">](https://github.com/kubernetes-sigs/metrics-server)|Metrics-Server| Efficient source of container resource metrics for Kubernetes |
 |[<img width="32" src="https://longhorn.io/img/logos/longhorn-icon-black.png">](https://longhorn.io/)|Longhorn| Cloud native distributed block storage for Kubernetes |
 |[<img width="32" src="https://avatars.githubusercontent.com/u/18700703?s=200&v=4">](https://kubevirt.io/)|KubeVirt| Run traditional VMs inside Kubernetes as Pods |
+|[<img width="32" src="https://avatars.githubusercontent.com/u/60239468?s=48&v=4">](https://metallb.io/)|Metallb| Load-balancer implementation for bare metal Kubernetes clusters |
+|[<img width="32" src="https://avatars.githubusercontent.com/u/40275816?s=48&v=4">](https://goharbor.io/)|Harbor| Open source container registry |
