@@ -34,3 +34,6 @@ spec:
   values:
     expose:
       type: loadBalancer
+      tls:
+        auto:
+          commonName: "harbor"
