@@ -15,8 +15,6 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
-      with:
-        ref: ${{ github.head_ref }}
 
     - name: Set up Kind cluster
       uses: helm/kind-action@v1
