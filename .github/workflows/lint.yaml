@@ -13,15 +13,18 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Set up Kind Cluster
+    - name: Set up Kind cluster
       uses: engineerd/setup-kind@v0.5.0
-      with:
-        version: v0.17.0
 
-    - name: Install Flux CLI
-      uses: fluxcd/flux2-action@v2
+    - name: Set up kubectl
+      uses: azure/setup-kubectl@v3
       with:
-        flux_version: "v0.26.0"
+        version: 'v1.31.4'
+
+    - name: Set up Flux CLI
+      uses: mamezou-tech/setup-flux2@v2
+      with:
+        flux2-version: '2.2.3'
 
     - name: Bootstrap Flux in Kind Cluster
       run: |
