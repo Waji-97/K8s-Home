@@ -6,8 +6,13 @@ metadata:
 spec:
   certificateRotateStrategy: {}
   configuration:
+    network:
+      binding:
+        macvtap:
+          domainAttachmentType: "tap"
     developerConfiguration:
-      featureGates: []
+      featureGates: 
+        - NetworkBindingPlugins
   customizeComponents: {}
   imagePullPolicy: IfNotPresent
   workloadUpdateStrategy: {}
