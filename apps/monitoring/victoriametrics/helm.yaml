@@ -53,5 +53,12 @@ spec:
         targetPort: 2381
       vmScrape:
         spec:
+          jobLabel: jobLabel
+          namespaceSelector:
+            matchNames: [kube-system]
           endpoints:
-            scheme: http
+            - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+              port: http-metrics
+              scheme: http
+              tlsConfig:
+                caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
